@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {map} from 'rxjs/operators';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
+import { Store, select } from '@ngrx/store';
+import { isLoggedIn, isLoggedOut } from './auth/auth.selectors';
 
 @Component({
     selector: 'app-root',
@@ -11,9 +13,13 @@ import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Route
 })
 export class AppComponent implements OnInit {
 
-    loading = true;
+  loading = true;
 
-    constructor(private router: Router) {
+  isLoggedIn$: Observable<boolean>;
+
+  isLoggedOut$: Observable<boolean>;
+
+    constructor(private router: Router, private store: Store) {
 
     }
 
@@ -37,6 +43,16 @@ export class AppComponent implements OnInit {
           }
         }
       });
+
+      this.isLoggedIn$ = this.store
+        .pipe(
+        select(isLoggedIn)//or distinctUntilChanges() rxjs operator to fetch data only when it's changed
+      )
+
+      this.isLoggedOut$ = this.store
+        .pipe(
+          select(isLoggedOut)
+        )
 
     }
 
