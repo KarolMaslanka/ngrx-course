@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
-import {map} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { isLoggedIn, isLoggedOut } from './auth/auth.selectors';
+import { logout, login } from './auth/auth.actions';
 
 @Component({
     selector: 'app-root',
@@ -23,41 +24,44 @@ export class AppComponent implements OnInit {
 
     }
 
-    ngOnInit() {
+  ngOnInit() {
 
-      this.router.events.subscribe(event  => {
-        switch (true) {
-          case event instanceof NavigationStart: {
-            this.loading = true;
-            break;
-          }
+    const user = localStorage.getItem('user');
 
-          case event instanceof NavigationEnd:
-          case event instanceof NavigationCancel:
-          case event instanceof NavigationError: {
-            this.loading = false;
-            break;
-          }
-          default: {
-            break;
-          }
+    this.store.dispatch(login({user: JSON.parse(user)}))
+
+    this.router.events.subscribe(event  => {
+      switch (true) {
+        case event instanceof NavigationStart: {
+          this.loading = true;
+          break;
         }
-      });
 
-      this.isLoggedIn$ = this.store
-        .pipe(
-        select(isLoggedIn)//or distinctUntilChanges() rxjs operator to fetch data only when it's changed
+        case event instanceof NavigationEnd:
+        case event instanceof NavigationCancel:
+        case event instanceof NavigationError: {
+          this.loading = false;
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    });
+
+    this.isLoggedIn$ = this.store
+      .pipe(
+      select(isLoggedIn)//or distinctUntilChanges() rxjs operator to fetch data only when it's changed
+    )
+
+    this.isLoggedOut$ = this.store
+      .pipe(
+        select(isLoggedOut),
       )
-
-      this.isLoggedOut$ = this.store
-        .pipe(
-          select(isLoggedOut)
-        )
-
     }
 
-    logout() {
-
-    }
+  logout() {
+    this.store.dispatch(logout());
+  }
 
 }

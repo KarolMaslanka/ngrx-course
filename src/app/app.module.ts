@@ -12,18 +12,21 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import {RouterModule, Routes} from '@angular/router';
-import {AuthModule} from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/auth.guard'
 import {environment} from '../environments/environment';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
 
 
 const routes: Routes = [
   {
     path: 'courses',
-    loadChildren: () => import('./courses/courses.module').then(m => m.CoursesModule)
+    loadChildren: () => import('./courses/courses.module').then(m => m.CoursesModule),
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
@@ -36,7 +39,9 @@ const routes: Routes = [
 @NgModule({ declarations: [
         AppComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+  bootstrap: [AppComponent],
+  imports: [
+        BrowserModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(routes),
         MatMenuModule,
@@ -47,7 +52,8 @@ const routes: Routes = [
         MatToolbarModule,
         AuthModule.forRoot(),
         StoreModule.forRoot({}, {}),
-        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })],
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forRoot([])],
         providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {
 }
