@@ -25,6 +25,7 @@
     "@angular/platform-browser": "19.2.14",
     "@angular/platform-browser-dynamic": "19.2.14",
     "@angular/router": "19.2.14",
+    "@ngrx/data": "^19.2.1",
     "@ngrx/effects": "^19.2.1",
     "@ngrx/entity": "^19.2.1",
     "@ngrx/router-store": "^19.2.1",
